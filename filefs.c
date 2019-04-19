@@ -35,8 +35,7 @@ int main(int argc, char** argv){
   int filefsname = 0;
   int debug = 0;
 
-
-  while ((opt = getopt(argc, argv, "lda:r:e:f:")) != -1) {
+  while ((opt = getopt(argc, argv, "lda:r:e:f:k:")) != -1) {
     switch (opt) {
     case 'l':
       list = 1;
@@ -60,6 +59,7 @@ int main(int argc, char** argv){
     case 'd':
       debug = 1;
     break;
+
     default:
       exitusage(argv[0]);
     }

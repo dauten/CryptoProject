@@ -54,6 +54,9 @@ void mapfs(int fd){
   }
 }
 
+
+
+
 //print binary data file to stdout in hex
 void out(void * file, int length){
   int j;
