@@ -1,0 +1,25 @@
+Basic functionality works as specified in assignment document.
+A few things to note:
+**Indirect block pointer is not implemented.**  Because of this the maximum file size supported is 100 * 496 (512 bytes per block - 8 bytes for size - 8 bytes for numb) or 49600 bytes.
+All pathnames must be absolute starting to root directory.  Relative pathnames cause segfaults because we don't know where to start in the FS
+It is possible to add a file twice, ie add /a/b/c.txt then add /a/b/c.txt again.  This doesn't result in an error immediately but it will mess up the FS structure if you attempt to later remove it.
+Any individual file name must be less than 100 although the total path had no particular limit (in practice we are limited by number of available inodes)
+Any arbitrary file can be added be it binary or text.  We don't care about the format at all, and all data that is added then removed from the FS is identical via diff
+the list feature works by printing a tree looking something like this:
+ /
+  home/
+    dale/
+      file.txt
+      Downloads/
+        file.txt
+        file.mp3
+with dirs ending with /
+the debug feature goes through the list of inodes printing indo about all the the inodes that have been allocated, even if they're never in use.  Example output might be
+Inode 0 has type 2, usage 1, and size 1, and name of
+Inode 1 has type 2, usage 1, and size 1, and name of home
+Inode 2 has type 1, usage 1, and size 12, and name of file.txt
+type 1 being file, type 2 being dir, size being number of items (if dir) or number of blocks (if file).  Usage is a bit indicating if its still in use
+
+More details are explained in my comments as well as I could.
+
+Yes, I know I don't free() my malloc()'s I'm not proud of it but it works
