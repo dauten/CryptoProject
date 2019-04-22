@@ -13,6 +13,7 @@
 #include <sys/mman.h>
 
 #include "fs.h"
+#include "crypto.h"
 
 int zerosize(int fd);
 void exitusage(char* pname);
@@ -93,6 +94,7 @@ int main(int argc, char** argv){
       }
   }
 
+  aestest(fd);
 
   mapfs(fd);
 

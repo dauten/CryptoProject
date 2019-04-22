@@ -13,7 +13,7 @@
 
 #include <sys/mman.h>
 
-
+#include "crypto.h"
 
 struct block{
   long numb;
@@ -106,6 +106,28 @@ void writeRange(int fd, void * data, int start, int end){
   }
 }
 
+void aestest(int fd){
+  char dat[16] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p'};
+
+  out(dat, 16);
+  code(dat, 1, 1, 16);
+  printf("\n\n");
+  out(dat, 16);
+  code(dat, 1, 2, 16);
+  printf("\n\n");
+  out(dat, 16);
+  printf("\n\n\n\n");
+
+  out(dat, 16);
+  code(dat, 2, 1, 16);
+  printf("\n\n");
+  out(dat, 16);
+  code(dat, 2, 2, 16);
+  printf("\n\n");
+  out(dat, 16);
+  printf("\n");
+  return;
+}
 
 void unmapfs(){
   munmap(fs, FSSIZE);
