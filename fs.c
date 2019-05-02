@@ -106,28 +106,6 @@ void writeRange(int fd, void * data, int start, int end){
   }
 }
 
-void aestest(int fd){
-  char dat[16] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p'};
-
-  out(dat, 16);
-  code(dat, 1, 1, 16);
-  printf("\n\n");
-  out(dat, 16);
-  code(dat, 1, 2, 16);
-  printf("\n\n");
-  out(dat, 16);
-  printf("\n\n\n\n");
-
-  out(dat, 16);
-  code(dat, 2, 1, 16);
-  printf("\n\n");
-  out(dat, 16);
-  code(dat, 2, 2, 16);
-  printf("\n\n");
-  out(dat, 16);
-  printf("\n");
-  return;
-}
 
 void unmapfs(){
   munmap(fs, FSSIZE);
@@ -246,7 +224,7 @@ struct inode * makeDir(struct inode * parent, int fd, char name[]){
 
 
 //given the inode for a file, reconstruct file and out() it
-void readFile(struct inode * F, int fd){
+void readFile(struct inode * F, int fd, int mode, int otf){
 
   //iterate through every block
   for(int i = 0; i < F->size; i++){
@@ -258,11 +236,19 @@ void readFile(struct inode * F, int fd){
     struct block * B = malloc(sizeof(struct block));
     B = readRange(fd, addr, addr+512);
 
+
     //extract specifically the data from that block
     void * data = readRange(fd, addr+16, addr+B->size);
+    if(otf){
+      void * O = code(B->content, mode, 0, B->size);
+      //dumps raw data to stdout
+      dump(O, B->size);
+    }
+    else{
+      //dumps raw data to stdout
+      dump(B->content, B->size);
+    }
 
-    //dumps raw data to stdout
-    dump(B->content, B->size);
 
   }
 }
@@ -489,7 +475,7 @@ void addInode(struct inode * I, char * path[], int fd, int len){
 /*
 * Given a filename construct inode for that and write its content to data blocks refered to by that inode
 */
-void addfilefs(char* fname, int fd){
+void addfilefs(char* fname, int fd, int mode, int otf){
   int in;
   if ((in = open(fname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR)) == -1){
     perror("open failed");
@@ -552,6 +538,12 @@ void addfilefs(char* fname, int fd){
         I->content[i] = B->numb;
         int start = blockAddress(B->numb, fd);
 
+        if(otf)
+        {
+          //encrypt data and return to B->content
+          void * dat = code(B->content, mode, 1, s);
+          memcpy(B->content, dat, s);
+        }
         //write that block
         writeRange(fd, B, start, start+512);
       }
@@ -722,14 +714,14 @@ void removefilefs(char* fname, int fd){
 }
 
 //get inode of file and read it
-void extractfilefs(char* fname, int fd){
+void extractfilefs(char* fname, int fd, int mode, int otf){
   int pNum = pathLength(fname);
   char * paths[pNum];
 
   pathNameConvert(fname, paths, pNum);
   struct inode * I = getInode(paths, fd, pNum);
 
-  readFile(I, fd);
+  readFile(I, fd, mode, otf);
 }
 
 /*

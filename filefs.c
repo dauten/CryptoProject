@@ -35,8 +35,11 @@ int main(int argc, char** argv){
   int newfs = 0;
   int filefsname = 0;
   int debug = 0;
+  int mode = 1;
+  int otf = 0;
+  int disk = 0;
 
-  while ((opt = getopt(argc, argv, "lda:r:e:f:k:")) != -1) {
+  while ((opt = getopt(argc, argv, "lhdmoka:r:e:f:")) != -1) {
     switch (opt) {
     case 'l':
       list = 1;
@@ -59,6 +62,18 @@ int main(int argc, char** argv){
       break;
     case 'd':
       debug = 1;
+    break;
+    case 'm':
+      mode = 2;
+    break;
+    case 'h':
+      printf("Usage:\n./filefs -a [file to add] -e [file to print] -r [file to delete] -l[to list structure] -m[to use CBC instead of the default EBC] -d[for debugging info] -f <filesystem to use>");
+    break;
+    case 'o':
+      otf = 1;  //if set, use full disk instead of on the fly encryptions
+    break;
+    case 'k':
+      disk = 1;  //if set, use full disk instead of on the fly encryptions
     break;
 
     default:
@@ -94,8 +109,6 @@ int main(int argc, char** argv){
       }
   }
 
-  aestest(fd);
-
   mapfs(fd);
 
   if (newfs){
@@ -103,7 +116,7 @@ int main(int argc, char** argv){
   }
 
   if (add){
-    addfilefs(toadd, fd);
+    addfilefs(toadd, fd, mode, otf);
   }
 
   if (remove){
@@ -111,7 +124,7 @@ int main(int argc, char** argv){
   }
 
   if (extract){
-    extractfilefs(toextract, fd);
+    extractfilefs(toextract, fd, mode, otf);
   }
 
   if(list){
