@@ -14,7 +14,7 @@
 #include <sys/mman.h>
 
 #include "crypto.h"
-
+#include "mounter.h"
 struct block{
   long numb;
   long size;

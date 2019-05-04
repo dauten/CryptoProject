@@ -14,8 +14,9 @@
 
 #include "fs.h"
 #include "crypto.h"
+#include "mounter.h"
 
-int zerosize(int fd);
+
 void exitusage(char* pname);
 
 
@@ -37,9 +38,11 @@ int main(int argc, char** argv){
   int debug = 0;
   int mode = 1;
   int otf = 0;
-  int disk = 0;
+  int mount = 0;
+  int umount = 0;
+  char* mpoint = NULL;
 
-  while ((opt = getopt(argc, argv, "lhdmoka:r:e:f:")) != -1) {
+  while ((opt = getopt(argc, argv, "lhdmon:u:a:r:e:f:")) != -1) {
     switch (opt) {
     case 'l':
       list = 1;
@@ -72,8 +75,13 @@ int main(int argc, char** argv){
     case 'o':
       otf = 1;  //if set, use full disk instead of on the fly encryptions
     break;
-    case 'k':
-      disk = 1;  //if set, use full disk instead of on the fly encryptions
+    case 'n':
+      mount = 1;  //if set, use full disk instead of on the fly encryptions
+      mpoint = strdup(optarg);
+    break;
+    case 'u':
+      umount = 1;
+      mpoint = strdup(optarg);
     break;
 
     default:
@@ -81,6 +89,7 @@ int main(int argc, char** argv){
     }
   }
 
+  printf("cases broken\n");
 
   if (!filefsname){
     exitusage(argv[0]);
@@ -110,6 +119,21 @@ int main(int argc, char** argv){
   }
 
   mapfs(fd);
+  printf("fs mapped\n");
+
+  if(mount){
+    printf("Initiating mount\n");
+    mountRange(fd, 0, FSSIZE, 0, 0, mpoint);
+    printf("Filesystem 'mounted.'  You may now operate on it as usual.\n");
+    return 0;
+  }
+  else if(umount){
+    printf("Initiating unmount\n");
+    mountRange(fd, 0, FSSIZE, 0, 1, mpoint);
+    printf("Filesystem 'unmounted.'  It may no longer be operated on.\n");
+    return 0;
+  }
+
 
   if (newfs){
     formatfs(fd);
@@ -140,14 +164,6 @@ int main(int argc, char** argv){
   return 0;
 }
 
-
-int zerosize(int fd){
-  struct stat stats;
-  fstat(fd, &stats);
-  if(stats.st_size == 0)
-    return 1;
-  return 0;
-}
 
 void exitusage(char* pname){
   fprintf(stderr, "Usage %s [-l] [-a path] [-e path] [-r path] -f name\n", pname);
