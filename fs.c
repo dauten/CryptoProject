@@ -115,7 +115,6 @@ void unmapfs(){
 * Instantiate filesystem
 */
 void formatfs(int fd){
-  printf("formatting FS\n");
   //installs superblock and bitmap in FS
   struct superblock *M=malloc(sizeof(struct superblock));
   M->numOfBlocks = 10000;

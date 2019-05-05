@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define FSSIZE 10000000
+#define FSSIZE 16000000
 
 unsigned char* fs;
 

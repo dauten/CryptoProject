@@ -89,8 +89,7 @@ int main(int argc, char** argv){
     }
   }
 
-  printf("cases broken\n");
-
+  
   if (!filefsname){
     exitusage(argv[0]);
   }
@@ -119,18 +118,18 @@ int main(int argc, char** argv){
   }
 
   mapfs(fd);
-  printf("fs mapped\n");
+ 
 
   if(mount){
-    printf("Initiating mount\n");
+    
     mountRange(fd, 0, FSSIZE, 0, 0, mpoint);
-    printf("Filesystem 'mounted.'  You may now operate on it as usual.\n");
+    
     return 0;
   }
   else if(umount){
-    printf("Initiating unmount\n");
+    
     mountRange(fd, 0, FSSIZE, 0, 1, mpoint);
-    printf("Filesystem 'unmounted.'  It may no longer be operated on.\n");
+    
     return 0;
   }
 
