@@ -1,0 +1,29 @@
+See Report.
+
+Usage ./filefs -a [file to add] -e [file to print] -r [file to delete] -l -m -d -o -u [unmount point] -n [mount point] -f <filesystem to use>
+
+examples:
+./filefs -a /A/B/C.txt -f fs
+adds file at absolute path /A/B/C.txt on your computer to the file system with same path, creating neccessary inodes and changes to blocks as needed.
+If the -e flag is used in place of -a, the file at that same location is printed to the terminal.  This can be redirected to a file and compared to the original with diff.
+If the -r flag is used in place of -a, the file at that location in the file system is removed from the file system.
+
+./filefs -l -f fs
+prints the tree structure of the filesystem, not unlike:
+/
+	A/
+		B1/
+			C1.txt
+		B2/
+			C2.txt
+
+./filefs -d -f fs
+prints debugging information about the filesystem including states of all inodes
+
+
+The encryption commands can be used in conjunction with the a/e/r flags.
+-o tells the file system to encode or decode the input or output data using AES and the key that is hard coded in crypto.c.  If the -m flag is used then CBC will be used instead of the default ECB.
+
+-u tells the file system where to unmount the FS to, encrypting the entire thing.  This looks like ./filefs -u ondisk -f fs
+-n tells the file system where to mount the FS to, unencrypting the entire thing.  This looks like ./filefs -n fs -f ondisk
+

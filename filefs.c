@@ -42,6 +42,7 @@ int main(int argc, char** argv){
   int umount = 0;
   char* mpoint = NULL;
 
+  //parse command line arguments to set necessary variables
   while ((opt = getopt(argc, argv, "lhdmon:u:a:r:e:f:")) != -1) {
     switch (opt) {
     case 'l':
@@ -70,7 +71,7 @@ int main(int argc, char** argv){
       mode = 2;
     break;
     case 'h':
-      printf("Usage:\n./filefs -a [file to add] -e [file to print] -r [file to delete] -l[to list structure] -m[to use CBC instead of the default EBC] -d[for debugging info] -f <filesystem to use>");
+
     break;
     case 'o':
       otf = 1;  //if set, use full disk instead of on the fly encryptions
@@ -89,11 +90,13 @@ int main(int argc, char** argv){
     }
   }
 
-  
+
+  //exit if we weren't given an FS to work on
   if (!filefsname){
     exitusage(argv[0]);
   }
 
+  //open FS, making a new one if none exists with that name
   if ((fd = open(fsname, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR)) == -1){
     perror("open failed");
     exit(EXIT_FAILURE);
@@ -116,44 +119,39 @@ int main(int argc, char** argv){
 
       }
   }
-
   mapfs(fd);
- 
 
+  //mount or unmount it
   if(mount){
-    
+
     mountRange(fd, 0, FSSIZE, 0, 0, mpoint);
-    
+
     return 0;
   }
   else if(umount){
-    
+
     mountRange(fd, 0, FSSIZE, 0, 1, mpoint);
-    
+
     return 0;
   }
-
-
+  //format FS (add superblock, FBL, etc)
   if (newfs){
     formatfs(fd);
   }
-
+  //add file
   if (add){
     addfilefs(toadd, fd, mode, otf);
   }
-
+  //etc
   if (remove){
     removefilefs(toremove, fd);
   }
-
   if (extract){
     extractfilefs(toextract, fd, mode, otf);
   }
-
   if(list){
     lsfs(fd);
   }
-
   if(debug){
     meta(fd);
   }
@@ -163,8 +161,8 @@ int main(int argc, char** argv){
   return 0;
 }
 
-
+//print usage if arguments fail
 void exitusage(char* pname){
-  fprintf(stderr, "Usage %s [-l] [-a path] [-e path] [-r path] -f name\n", pname);
+  fprintf(stderr, "Usage:\n%s -a [file to add] -e [file to print] -r [file to delete] -l[to list structure] -m[to use CBC instead of the default EBC] -d[for debugging info] -f <filesystem to use>", pname);
   exit(EXIT_FAILURE);
 }

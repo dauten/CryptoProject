@@ -1,9 +1,6 @@
 /**
-*
-* Description: Program that handles cryptological aspects of the Disk Encryption
-*
+* Description: Program that handles cryptographic aspects of the Disk Encryption
 */
-
 
 #include "fs.h"
 #include <unistd.h>
@@ -22,7 +19,6 @@
 #include "aes.h"
 
 #define CBC 1
-
 
 
 static void phex(uint8_t* str)
@@ -52,7 +48,6 @@ void * code(void * data, int mode, int crypt, int length){
   AES_init_ctx_iv(&ctx, key, key);
 
   if(mode == 1){
-
     if(crypt == 1){
       for (i = 0; i < length/16; ++i)
       {
@@ -65,7 +60,6 @@ void * code(void * data, int mode, int crypt, int length){
       }
     }
   }else{
-
     if(crypt == 1){
       AES_CBC_encrypt_buffer(&ctx, data, length);
     }
